@@ -1,0 +1,98 @@
+#!/bin/sh
+
+#Niels Valdemar Hedlund s154130 & Andreas Juul Rasmussen s164933
+#Technological univercity of Denmark
+
+#hardcoded links for demonstration
+export URL='http://nmap.org/dist/nmap-6.40.tar.bz2'
+export rpmURL='https://nmap.org/dist/nmap-7.80-1.x86_64.rpm'
+
+test=$(basename $URL)
+
+
+echo $test | awk -F ".tar"
+
+echo Do you want to install from:
+echo 1 - source
+echo 2 - rpm to deb using alien
+echo 3 - dpkg
+read installchoice
+if [ $installchoice -eq 1 ]
+then
+  echo You have chosen source, type in URL.
+  #read URL
+  echo $URL
+  chmod 777 /usr/local/src
+  cd /usr/local/src
+  wget $URL
+
+  #getting name to unpack
+  base=$(basename $URL)
+  echo $base
+  tar xvjf $base -O > latest
+  cd latest
+
+  #intalling
+  ./configure
+  make
+  make install
+  echo Installation Complete
+
+if [ $installchoice -eq 2 ]
+then
+  echo You have choosen rpm to dpkg. Type in URL
+  #read $rpmURL
+  echo $rpmURL
+
+
+  #channing permissions for folder
+  chmod 777 /usr/local/src
+  cd /usr/local/src
+
+  #Downloading RPM file
+  wget $rpmURL
+
+  #getting name to unpack
+  base=$(basename $rpmURL)
+  echo $base
+  tar xvjf $base -O > latest.rpm
+
+  #converting rpm to deb -d & installing -i
+  echo converting RPM to deb
+  alien -d -i latest.rpm
+
+
+
+else
+  echo Unexpected installchoice
+fi
+
+if [ $installchoice -eq 3 ]
+then
+  echo You have choosen dpkg. Type in URL
+  read dpkgURL
+  echo $dpkgURL
+
+
+  #channing permissions for folder
+  chmod 777 /usr/local/src
+  cd /usr/local/src
+
+  #Downloading RPM file
+  wget -cO $dkpgURL > latest.deb
+
+  #installing with dkpg
+  dkpg --install latest.deb
+
+  echo installation complete
+
+
+
+else
+  echo Unexpected installchoice
+fi
+
+
+echo Press enter to install dependencies for for package
+read await
+
